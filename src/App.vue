@@ -24,7 +24,7 @@ import { useColorMode } from '@vueuse/core'
 import { computed } from "vue"
 
 const mode = useColorMode()
-mode.value = "dark"
+mode.value = "light"
 
 const route = useRoute()
 const breadcrumbs = computed(() =>
@@ -40,10 +40,7 @@ const breadcrumbs = computed(() =>
       <header class="flex h-16 shrink-0 items-center gap-2 border-b">
         <div class="flex items-center gap-2 px-3">
           <SidebarTrigger />
-          <Separator
-          orientation="vertical"
-          class="mr-2 data-[orientation=vertical]:h-4"
-        />
+          <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
           <Breadcrumb>
             <BreadcrumbList>
               <template v-for="(crumb, index) in breadcrumbs" :key="crumb.path">
