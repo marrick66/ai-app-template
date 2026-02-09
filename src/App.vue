@@ -19,11 +19,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { RouterView } from "vue-router"
+import { RouterLink, RouterView, useRoute } from "vue-router"
 import { useColorMode } from '@vueuse/core'
+import { computed } from "vue"
 
 const mode = useColorMode()
 mode.value = "dark"
+
+const route = useRoute()
+const breadcrumbs = computed(() =>
+  (route.meta.breadcrumbs as Array<{ title: string; path: string }>) ?? []
+)
 
 </script>
 
@@ -40,15 +46,19 @@ mode.value = "dark"
         />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem class="hidden md:block">
-                <BreadcrumbLink href="#">
-                  Building Your Application
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator class="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-              </BreadcrumbItem>
+              <template v-for="(crumb, index) in breadcrumbs" :key="crumb.path">
+                <BreadcrumbSeparator v-if="index > 0" class="hidden md:block" />
+                <BreadcrumbItem :class="{ 'hidden md:block': index < breadcrumbs.length - 1 }">
+                  <BreadcrumbPage v-if="index === breadcrumbs.length - 1">
+                    {{ crumb.title }}
+                  </BreadcrumbPage>
+                  <BreadcrumbLink v-else as-child>
+                    <RouterLink :to="crumb.path">
+                      {{ crumb.title }}
+                    </RouterLink>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </template>
             </BreadcrumbList>
           </Breadcrumb>
         </div>

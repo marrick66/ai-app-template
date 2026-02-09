@@ -4,9 +4,34 @@ import Reports from "../views/Reports.vue";
 import ReportComparisons from "../views/ReportComparisons.vue";
 
 const routes = [
-  { path: "/", component: Home },
-  { path: "/reports", component: Reports },
-  { path: "/reports/comparisons", component: ReportComparisons },
+  {
+    path: "/",
+    component: Home,
+    meta: {
+      breadcrumbs: [{ title: "Home", path: "/" }],
+    },
+  },
+  {
+    path: "/reports",
+    component: Reports,
+    meta: {
+      breadcrumbs: [
+        { title: "Home", path: "/" },
+        { title: "SEC Reports", path: "/reports" },
+      ],
+    },
+  },
+  {
+    path: "/reports/comparisons",
+    component: ReportComparisons,
+    meta: {
+      breadcrumbs: [
+        { title: "Home", path: "/" },
+        { title: "SEC Reports", path: "/reports" },
+        { title: "Comparisons", path: "/reports/comparisons" },
+      ],
+    },
+  },
 ];
 
 const router = createRouter({

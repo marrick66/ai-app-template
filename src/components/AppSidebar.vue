@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { SidebarProps } from "@/components/ui/sidebar"
+import { computed } from "vue"
+import { RouterLink, useRoute } from "vue-router"
 
 import { GalleryVerticalEnd } from "lucide-vue-next"
 import {
@@ -18,27 +20,26 @@ import {
 import { IconReport, IconVs } from "@tabler/icons-vue"
 
 const props = defineProps<SidebarProps>()
+const route = useRoute()
 
-// This is sample data.
-const data = {
+const data = computed(() => ({
   navMain: [
     {
       title: "SEC Reports",
-      url: "#",
+      url: "/reports",
       icon: IconReport,
-      isActive: true,
+      isActive: route.path === "/reports",
       items: [
         {
           title: "Comparisons",
-          url: "#",
-          icon: IconVs, 
-          isActive: false
+          url: "/reports/comparisons",
+          icon: IconVs,
+          isActive: route.path === "/reports/comparisons",
         },
       ],
     },
-    
   ],
-}
+}))
 </script>
 
 <template>
@@ -65,18 +66,18 @@ const data = {
         <SidebarMenu>
           <SidebarMenuItem v-for="item in data.navMain" :key="item.title">
             <SidebarMenuButton as-child :is-active="item.isActive">
-              <a :href="item.url" class="font-medium">
+              <RouterLink :to="item.url" class="font-medium">
                 <component :is="item.icon" />
                 <span>{{ item.title }}</span>
-              </a>
+              </RouterLink>
             </SidebarMenuButton>
             <SidebarMenuSub v-if="item.items.length">
               <SidebarMenuSubItem v-for="childItem in item.items" :key="childItem.title">
                 <SidebarMenuSubButton as-child :is-active="childItem.isActive">
-                    <a :href="childItem.url" class="font-medium">
+                    <RouterLink :to="childItem.url" class="font-medium">
                         <component :is="childItem.icon" />
                         <span>{{ childItem.title }}</span>
-                    </a>
+                    </RouterLink>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>
