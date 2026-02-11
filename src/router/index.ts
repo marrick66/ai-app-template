@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "@/views/Home.vue";
 import Reports from "@/views/reports/Reports.vue";
-import ReportComparisons from "@/views/ReportComparisons.vue";
+import Comparisons from "@/views/comparisons/Comparisons.vue";
 import Thinking from "@/views/Thinking.vue";
 
 const routes = [
@@ -24,7 +23,7 @@ const routes = [
   },
   {
     path: "/reports/comparisons",
-    component: ReportComparisons,
+    component: Comparisons,
     meta: {
       breadcrumbs: [
         { title: "Home", path: "/" },
@@ -33,6 +32,15 @@ const routes = [
       ],
     },
   },
+  {
+    path: "/thinking",
+    component: Thinking,
+    meta: {
+      breadcrumbs: [
+        { title: "Thinking", path: "/thinking" },
+      ],
+    },
+  }
 ];
 
 const router = createRouter({

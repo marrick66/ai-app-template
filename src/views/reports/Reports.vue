@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Report } from './models'
+import type Report from './models'
 import CardTitle from '@/components/ui/card/CardTitle.vue'
 import CardAction from '@/components/ui/card/CardAction.vue'
 
@@ -35,7 +35,7 @@ const reports: Report[] = [
     <div :class="'flex flex-col gap-6'">
         <Card>
             <CardHeader>
-                <CardTitle>Financial Reports</CardTitle>
+                <CardTitle>SEC Reports</CardTitle>
                 <CardAction>
                     <Button>Upload</Button>
                 </CardAction>

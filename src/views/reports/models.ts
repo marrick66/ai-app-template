@@ -1,4 +1,4 @@
-export interface Report {
+export default interface Report {
   id: string;
   type: string;
   year: number;

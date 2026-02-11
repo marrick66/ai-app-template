@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import ThinkingBlock from '@/components/ThinkingBlock.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import ThinkingDialog from '@/components/ThinkingDialog.vue'
+import { Button } from '@/components/ui/button'
 import type { TimelineStep } from '@/types/thinking'
 
 const isStreaming = ref(false)
 const thinkingSteps = ref<TimelineStep[]>([])
 const durationSeconds = ref(0)
+const dialogOpen = ref(false)
+
+const thinkingStream = computed(() => ({
+    summary: 'Thought about creating a thinking component',
+    thinkingSteps: thinkingSteps.value,
+    isStreaming: isStreaming.value,
+    durationSeconds: durationSeconds.value,
+}))
 
 let durationTimer: ReturnType<typeof setInterval> | null = null
 let aborted = false
@@ -73,6 +82,11 @@ function splitHtmlChunks(html: string): string[] {
     return chunks
 }
 
+function openThinkingDialog() {
+    dialogOpen.value = true
+    runDemo()
+}
+
 async function runDemo() {
     aborted = false
     thinkingSteps.value = []
@@ -122,7 +136,7 @@ function stopTimers() {
 }
 
 onMounted(() => {
-    runDemo()
+    // Demo can be triggered by button click
 })
 
 onUnmounted(() => {
@@ -131,19 +145,44 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <ThinkingBlock :thinking-steps="thinkingSteps" :is-streaming="isStreaming" :duration-seconds="durationSeconds"
-        :start-open="false" summary="Thought about creating a thinking component" />
+    <div class="thinking-view">
+        <div class="demo-controls">
+            <h2>Thinking Dialog Demo</h2>
+            <Button @click="openThinkingDialog" :disabled="dialogOpen">
+                {{ dialogOpen ? 'Dialog Open' : 'Open Thinking Dialog' }}
+            </Button>
+        </div>
+        
+        <ThinkingDialog 
+            v-model:open="dialogOpen" 
+            :stream="thinkingStream" 
+        />
+    </div>
 </template>
 
 <style scoped>
+.thinking-view {
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 .demo-controls {
     margin-bottom: 32px;
-    padding: 16px 20px;
+    padding: 24px;
     border-radius: 12px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    border: 1px solid var(--border-300);
+}
+
+.demo-controls h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-200);
 }
 
 .replay-btn {

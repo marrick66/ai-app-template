@@ -8,9 +8,6 @@ import {
   CheckIcon,
   FileOutputIcon,
   ChevronIcon,
-  ThumbsUpIcon,
-  ThumbsDownIcon,
-  RetryIcon,
 } from '@/components/icons'
 
 const props = withDefaults(
@@ -92,7 +89,7 @@ const resolveIcon = (iconName?: string) => {
           <span>Thinking</span>
         </span>
         <span v-else class="toggle-label">{{ displaySummary }}</span>
-        <span v-if="formattedDuration && !isStreaming" style="opacity: 0.6; font-size: 12px; flex-shrink: 0">
+        <span v-if="formattedDuration && !isStreaming" style="opacity: 0.6; font-size: 12px; flex-shrink: 0; padding-left:5px;">
           {{ formattedDuration }}
         </span>
         <span class="chevron" :class="isOpen ? 'open' : 'closed'">
@@ -273,6 +270,11 @@ const resolveIcon = (iconName?: string) => {
 .collapse-inner {
   overflow: hidden;
   min-width: 0;
+}
+
+.collapse-grid.open .collapse-inner {
+  overflow-y: auto;
+  height: 200px;
 }
 
 /* Timeline */
