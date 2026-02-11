@@ -7,7 +7,7 @@ import Thinking from "@/views/Thinking.vue";
 const routes = [
   {
     path: "/",
-    component: Home,
+    redirect: "/reports",
     meta: {
       breadcrumbs: [{ title: "Home", path: "/" }],
     },
@@ -31,13 +31,6 @@ const routes = [
         { title: "SEC Reports", path: "/reports" },
         { title: "Comparisons", path: "/reports/comparisons" },
       ],
-    },
-  },
-  {
-    path: "/thinking",
-    component: Thinking,
-    meta: {
-      breadrumbs: [{ title: "Thinking", path: "/thinking" }],
     },
   },
 ];
