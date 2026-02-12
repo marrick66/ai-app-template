@@ -3,8 +3,17 @@ import App from "./App.vue";
 import router from "./router";
 import "./style.css";
 
-const app = createApp(App);
+async function bootstrap() {
+  if (import.meta.env.DEV) {
+    const { makeServer } = await import("./mock/server");
+    makeServer({ environment: "development" });
+  }
 
-app.use(router);
+  const app = createApp(App);
 
-app.mount("#app");
+  app.use(router);
+
+  app.mount("#app");
+}
+
+bootstrap();

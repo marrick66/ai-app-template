@@ -3,53 +3,23 @@ import { ref, onMounted } from 'vue'
 import { type ComparisonEntry } from './models'
 import { Card, CardHeader, CardContent, CardTitle, CardAction } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-vue-next'
 import ComparisonEntryTable from './ComparisonEntryTable.vue'
 
 const comparisons = ref<ComparisonEntry[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-const fetchMockComparisons = (): ComparisonEntry[] => {
-    return [
-        {
-            id: '1',
-            report_type: '10-K',
-            section_name: 'Revenue Recognition',
-            year1: 2023,
-            year2: 2024,
-        },
-        {
-            id: '2',
-            report_type: '10-K',
-            section_name: 'Operating Expenses',
-            year1: 2023,
-            year2: 2024,
-        },
-        {
-            id: '3',
-            report_type: '10-Q',
-            section_name: 'Cash Flow Analysis',
-            year1: 2023,
-            year2: 2024,
-        },
-        {
-            id: '4',
-            report_type: '10-K',
-            section_name: 'Risk Factors',
-            year1: 2022,
-            year2: 2023,
-        }]
-}
-
 const fetchComparisons = async () => {
     try {
         loading.value = true
         error.value = null
-        const response = await fetch('/comparisons')
+        const response = await fetch('/api/comparisons')
         if (!response.ok) {
             throw new Error(`Failed to fetch comparisons: ${response.statusText}`)
         }
-        comparisons.value = await response.json()
+        const json = await response.json()
+        comparisons.value = json.comparisons
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'An error occurred'
         console.error('Error fetching comparisons:', err)
@@ -59,8 +29,7 @@ const fetchComparisons = async () => {
 }
 
 onMounted(() => {
-    comparisons.value = fetchMockComparisons()
-    loading.value = false
+    fetchComparisons()
 })
 </script>
 
@@ -76,7 +45,11 @@ onMounted(() => {
                 </CardAction>
             </CardHeader>
             <CardContent>
-                <ComparisonEntryTable :comparisons="comparisons" />
+                <div v-if="loading" class="py-8 flex items-center justify-center">
+                    <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+                <div v-else-if="error" class="py-8 text-center text-destructive">{{ error }}</div>
+                <ComparisonEntryTable v-else :comparisons="comparisons" />
             </CardContent>
         </Card>
     </div>
