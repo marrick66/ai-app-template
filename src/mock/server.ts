@@ -1,7 +1,69 @@
 import { createServer, Model, Factory, Response } from 'miragejs'
+import type { Server } from 'miragejs'
+import type { TimelineStep } from '@/types/thinking'
+
+function createComparisonStream(server: Server, body: string): globalThis.Response {
+  const attrs = JSON.parse(body)
+  server.create('comparison', attrs)
+
+  const { report_type, section_name, year1, year2 } = attrs
+  const steps: TimelineStep[] = [
+    {
+      type: 'thinking',
+      clippable: false,
+      html: `<p>I need to compare the <strong>${section_name}</strong> section between the ${report_type} filings for ${year1} and ${year2}.</p>`,
+    },
+    {
+      type: 'action',
+      icon: 'file-read-icon',
+      label: `Reading ${report_type} filing for ${year1}`,
+    },
+    {
+      type: 'action',
+      icon: 'file-read-icon',
+      label: `Reading ${report_type} filing for ${year2}`,
+    },
+    {
+      type: 'thinking',
+      clippable: true,
+      html: `<p>Now I have both filings loaded. Let me analyze the <strong>${section_name}</strong> section from each report.</p><p>I'll identify the key differences, changes in metrics, and notable trends between the two years.</p>`,
+    },
+    {
+      type: 'action',
+      icon: 'file-write-icon',
+      label: `Generating comparison for ${section_name}`,
+      file: `comparison-${year1}-${year2}.json`,
+    },
+    {
+      type: 'thinking',
+      clippable: false,
+      html: '<p>The comparison has been generated successfully.</p>',
+    },
+    {
+      type: 'done',
+    },
+  ]
+
+  const encoder = new TextEncoder()
+  const stream = new ReadableStream({
+    async start(controller) {
+      for (const step of steps) {
+        controller.enqueue(encoder.encode(JSON.stringify(step) + '\n'))
+        const delay = step.type === 'thinking' ? 1000 + Math.random() * 500 : 800 + Math.random() * 400
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      }
+      controller.close()
+    },
+  })
+
+  return new globalThis.Response(stream, {
+    status: 200,
+    headers: { 'Content-Type': 'application/x-ndjson' },
+  })
+}
 
 export function makeServer({ environment = 'development' } = {}) {
-  return createServer({
+  const mirageServer = createServer({
     environment,
 
     models: {
@@ -94,19 +156,32 @@ export function makeServer({ environment = 'development' } = {}) {
         return schema.find('comparison', request.params.id!)
       })
 
-      this.post('/comparisons', (schema, request) => {
-        const attrs = JSON.parse(request.requestBody)
-        return schema.create('comparison', attrs)
-      })
-
       this.del('/comparisons/:id', (schema, request) => {
         const comparison = schema.find('comparison', request.params.id!)
         comparison?.destroy()
         return new Response(204)
       })
 
+      // Uploads
+      this.post('/uploads', (_schema, _request) => {
+        return new Response(201, {}, { message: 'File uploaded successfully' })
+      })
+
       // Allow unhandled requests to pass through
       this.passthrough()
     },
   })
+
+  // Wrap fetch so POST /api/comparisons returns a ReadableStream
+  // (MirageJS can't return streaming responses natively)
+  const mirageFetch = globalThis.fetch
+  globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url
+    if (url.endsWith('/api/comparisons') && init?.method === 'POST') {
+      return createComparisonStream(mirageServer, init.body as string)
+    }
+    return mirageFetch.call(globalThis, input, init)
+  }
+
+  return mirageServer
 }

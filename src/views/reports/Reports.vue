@@ -14,12 +14,14 @@ import { Loader2 } from 'lucide-vue-next'
 import type Report from './models'
 import CardTitle from '@/components/ui/card/CardTitle.vue'
 import CardAction from '@/components/ui/card/CardAction.vue'
+import UploadDialog from './UploadDialog.vue'
 
 const reports = ref<Report[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+const uploadOpen = ref(false)
 
-onMounted(async () => {
+async function fetchReports() {
     try {
         loading.value = true
         const response = await fetch('/api/reports')
@@ -32,7 +34,9 @@ onMounted(async () => {
     } finally {
         loading.value = false
     }
-})
+}
+
+onMounted(fetchReports)
 </script>
 
 <template>
@@ -41,7 +45,7 @@ onMounted(async () => {
             <CardHeader>
                 <CardTitle>SEC Reports</CardTitle>
                 <CardAction>
-                    <Button>Upload</Button>
+                    <Button @click="uploadOpen = true">Upload</Button>
                 </CardAction>
             </CardHeader>
             <CardContent>
@@ -77,6 +81,7 @@ onMounted(async () => {
                 </Table>
             </CardContent>
         </Card>
+        <UploadDialog v-model:open="uploadOpen" @uploaded="fetchReports" />
     </div>
 </template>
 

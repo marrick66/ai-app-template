@@ -1,14 +1,28 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { type ComparisonEntry } from './models'
+import { type ComparisonEntry, type ComparisonParams } from './models'
 import { Card, CardHeader, CardContent, CardTitle, CardAction } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-vue-next'
 import ComparisonEntryTable from './ComparisonEntryTable.vue'
+import ComparisonDialog from './ComparisonDialog.vue'
+import ComparisonExecution from './ComparisonExecution.vue'
 
 const comparisons = ref<ComparisonEntry[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+const createOpen = ref(false)
+const executionOpen = ref(false)
+const executionParams = ref<ComparisonParams | null>(null)
+
+function handleDialogSubmit(data: ComparisonParams) {
+    executionParams.value = data
+    executionOpen.value = true
+}
+
+function handleExecutionCompleted() {
+    fetchComparisons()
+}
 
 const fetchComparisons = async () => {
     try {
@@ -39,7 +53,7 @@ onMounted(() => {
             <CardHeader>
                 <CardTitle>Report Comparisons</CardTitle>
                 <CardAction>
-                    <Button>
+                    <Button @click="createOpen = true">
                         Create
                     </Button>
                 </CardAction>
@@ -52,5 +66,12 @@ onMounted(() => {
                 <ComparisonEntryTable v-else :comparisons="comparisons" />
             </CardContent>
         </Card>
+        <ComparisonDialog v-model:open="createOpen" @submit="handleDialogSubmit" />
+        <ComparisonExecution
+            v-if="executionParams"
+            v-model:open="executionOpen"
+            :params="executionParams"
+            @completed="handleExecutionCompleted"
+        />
     </div>
 </template>
