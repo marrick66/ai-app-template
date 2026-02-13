@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
+import { config } from '@/lib/config'
 import ThinkingDialog from '@/components/ThinkingDialog.vue'
 import type { TimelineStep } from '@/types/thinking'
 import type { ComparisonParams } from './models'
@@ -65,7 +66,7 @@ async function execute() {
   }, 1000)
 
   try {
-    const response = await fetch('/api/comparisons', {
+    const response = await fetch(`${config.apiBaseUrl}/api/comparisons`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(props.params),

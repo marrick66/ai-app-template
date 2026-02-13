@@ -5,8 +5,8 @@ import "./style.css";
 
 async function bootstrap() {
   if (import.meta.env.DEV) {
-    const { makeServer } = await import("./mock/server");
-    makeServer({ environment: "development" });
+    const { startMockServiceWorker } = await import("./mock/browser");
+    await startMockServiceWorker();
   }
 
   const app = createApp(App);

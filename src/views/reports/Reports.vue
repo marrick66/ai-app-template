@@ -15,6 +15,7 @@ import type Report from './models'
 import CardTitle from '@/components/ui/card/CardTitle.vue'
 import CardAction from '@/components/ui/card/CardAction.vue'
 import UploadDialog from './UploadDialog.vue'
+import { config } from '@/lib/config'
 
 const reports = ref<Report[]>([])
 const loading = ref(true)
@@ -24,7 +25,7 @@ const uploadOpen = ref(false)
 async function fetchReports() {
     try {
         loading.value = true
-        const response = await fetch('/api/reports')
+        const response = await fetch(`${config.apiBaseUrl}/reports`)
         if (!response.ok) throw new Error(`Failed to fetch reports: ${response.statusText}`)
         const json = await response.json()
         reports.value = json.reports

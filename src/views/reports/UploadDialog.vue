@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { config } from '@/lib/config'
 import {
   Dialog,
   DialogContent,
@@ -61,7 +62,7 @@ async function handleSubmit() {
     formData.append('file', file.value)
     formData.append('description', description.value.trim())
 
-    const response = await fetch('/api/uploads', {
+    const response = await fetch(`${config.apiBaseUrl}/uploads`, {
       method: 'POST',
       body: formData,
     })

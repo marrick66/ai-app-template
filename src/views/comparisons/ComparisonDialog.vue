@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { config } from '@/lib/config'
 import {
   Dialog,
   DialogContent,
@@ -62,7 +63,7 @@ watch(
 async function fetchReports() {
   try {
     loadingReports.value = true
-    const response = await fetch('/api/reports')
+    const response = await fetch(`${config.apiBaseUrl}/reports`)
     if (!response.ok) throw new Error(`Failed to fetch reports: ${response.statusText}`)
     const json = await response.json()
     reports.value = json.reports

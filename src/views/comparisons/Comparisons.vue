@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-vue-next'
 import ComparisonEntryTable from './ComparisonEntryTable.vue'
 import ComparisonDialog from './ComparisonDialog.vue'
 import ComparisonExecution from './ComparisonExecution.vue'
+import { config } from '@/lib/config'
 
 const comparisons = ref<ComparisonEntry[]>([])
 const loading = ref(true)
@@ -28,7 +29,7 @@ const fetchComparisons = async () => {
     try {
         loading.value = true
         error.value = null
-        const response = await fetch('/api/comparisons')
+        const response = await fetch(`${config.apiBaseUrl}/comparisons`)
         if (!response.ok) {
             throw new Error(`Failed to fetch comparisons: ${response.statusText}`)
         }
